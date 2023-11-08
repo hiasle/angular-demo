@@ -1,15 +1,14 @@
+### STAGE 1: Build ###
 FROM node:16.20-alpine3.18
-
-WORKDIR /app
-
+WORKDIR /usr/src/app
 COPY package*.json .
-
 RUN npm install
-
 COPY . .
-
 RUN npm run build
 
-EXPOSE 4200
+### STAGE 2: Run ###
+FROM nginx:1.17.1-alpine
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /usr/src/app/dist/aston-villa-app /usr/share/nginx/html
 
-CMD ["npm", "start"]
+EXPOSE 80
